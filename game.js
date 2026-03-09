@@ -9,7 +9,7 @@ const { Engine, Runner, Bodies, Body, World, Events, Query, Vector } = Matter;
 // ── CONSTANTS ───────────────────────────────────────
 const PLAYER_R     = 18;
 const MOVE_SPD     = 5.5;
-const JUMP_VEL     = -50;
+const JUMP_VEL     = -12;
 const GRAVITY_Y    = 2.2;
 const MAX_FALL     = 18;
 const PUNCH_RANGE  = PLAYER_R * 4;
@@ -351,7 +351,7 @@ function initGame() {
       collisionFilter:{ category:0x0001, mask:0x0002 }
     });
     World.add(G.engine.world, body);
-    G.players.push({ body, lives:3, cd:{punch:0,arrow:0}, alive:true, idx:i, grounded:false, facingRight:true, respawnFlash:0, dist:0 });
+    G.players.push({ body, lives:3, cd:{punch:0,arrow:0}, alive:true, idx:i, grounded:false, jumpHeld:false, facingRight:true, respawnFlash:0, dist:0 });
   }
 
   // Collision: track grounded
@@ -511,7 +511,14 @@ function handleInput(W, H) {
     if (k.left)  { Body.setVelocity(b, {x: Math.max(vx-1.2, -MOVE_SPD), y:vy}); p.facingRight=false; }
     if (k.right) { Body.setVelocity(b, {x: Math.min(vx+1.2,  MOVE_SPD), y:vy}); p.facingRight=true; }
     if (!k.left && !k.right) { Body.setVelocity(b, {x: vx*0.82, y:vy}); }
-    if (k.up && p.grounded) { Body.setVelocity(b, {x:vx, y:JUMP_VEL}); p.grounded=false; }
+    if (k.up && !p.jumpHeld) {
+      const jumpDist = cH() * (75/400);
+      Body.setPosition(b, { x: b.position.x, y: b.position.y - jumpDist });
+      Body.setVelocity(b, { x: vx, y: -2 });
+      p.grounded = false;
+      p.jumpHeld = true;
+    }
+    if (!k.up) p.jumpHeld = false;
     if (vy > MAX_FALL) Body.setVelocity(b, {x:vx, y:MAX_FALL});
 
     // Punch
