@@ -9,7 +9,7 @@ const { Engine, Runner, Bodies, Body, World, Events, Query, Vector } = Matter;
 // ── CONSTANTS ───────────────────────────────────────
 const PLAYER_R     = 18;
 const MOVE_SPD     = 5.5;
-const JUMP_VEL     = -12;
+const JUMP_VEL     = -50;
 const GRAVITY_Y    = 2.2;
 const MAX_FALL     = 18;
 const PUNCH_RANGE  = PLAYER_R * 4;
